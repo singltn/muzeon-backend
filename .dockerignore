@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+.git/
+.idea/
+.vscode/
+*.swp
+
+Dockerfile
+docker-compose*.yaml
+!.dockerignore

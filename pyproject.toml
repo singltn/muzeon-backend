@@ -1,0 +1,34 @@
+[project]
+name = "muzeon-backend"
+version = "0.1.0"
+description = "Museum management platform API"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
+    "fastapi>=0.136.0",
+    "greenlet>=3.4.0",
+    "pydantic-settings>=2.14.0",
+    "sqlalchemy>=2.0.49",
+    "uvicorn>=0.46.0",
+    "redis[asyncio]>=5.2.0",
+    "bcrypt>=4.2.0",
+    "aiosmtplib>=3.0.0",
+    "email-validator>=2.2.0",
+    "python-json-logger>=4.1.0",
+    "user-agents>=2.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
+    "httpx>=0.28.0",
+    "pytest-mock>=3.14.0",
+    "anyio>=4.8.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
