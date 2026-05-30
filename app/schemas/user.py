@@ -3,11 +3,11 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
 from app.enums.database import UserRoleEnum
+from app.schemas.museum import MuseumBrief
 
 
 class AdminUserCreate(BaseModel):
     email: EmailStr
-    password: str
     first_name: str
     last_name: str
     role: UserRoleEnum = UserRoleEnum.content
@@ -30,7 +30,7 @@ class AdminUserShallow(BaseModel):
     model_config = {"from_attributes": True}
 
 class AdminUserBase(AdminUserShallow):
-    museum_id: int | None
+    museum: MuseumBrief | None = None
     created_at: datetime
     updated_at: datetime
 

@@ -1,12 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import hash_password
+from app.core.security import generate_password, hash_password
 from app.cruds.admin_user import AdminUserCrud
+from app.cruds.museum import MuseumCrud
 from app.db.models.admin_user import AdminUser
 from app.enums.database import UserRoleEnum
+from app.exceptions.auth import SMTPError
 from app.exceptions.http import PermissionDeniedError
+from app.exceptions.museum import MuseumNotFoundError
 from app.exceptions.user import UserAlreadyExistsError, UserNotFoundError
 from app.schemas.user import AdminUserCreate, AdminUserUpdate
+from app.services.mail import mailer
 from app.services.tenant import check_museum_access
 
 MUSEUM_USER_MANAGER_ROLES = frozenset(
@@ -21,6 +25,7 @@ MUSEUM_STAFF_ROLES = frozenset(
 class UserService:
     def __init__(self, session: AsyncSession) -> None:
         self._crud = AdminUserCrud(session)
+        self._museum_crud = MuseumCrud(session)
         self._session = session
 
     def _check_can_manage_users(self, actor: AdminUser, museum_id: int) -> None:
@@ -49,9 +54,14 @@ class UserService:
         if await self._crud.get_by_email(str(data.email)):
             raise UserAlreadyExistsError()
 
+        museum = await self._museum_crud.get_by_id(museum_id)
+        if not museum:
+            raise MuseumNotFoundError()
+
+        plain_password = generate_password()
         user = await self._crud.create(
             email=str(data.email),
-            password=hash_password(data.password),
+            password=hash_password(plain_password),
             first_name=data.first_name,
             last_name=data.last_name,
             role=data.role,
@@ -60,7 +70,19 @@ class UserService:
             created_by=actor.id,
             updated_by=actor.id,
         )
-        return user
+
+        try:
+            await mailer.send_credentials_email(
+                to_email=str(data.email),
+                password=plain_password,
+                museum_name=museum.name,
+            )
+        except SMTPError:
+            await self._crud.delete(user)
+            raise
+
+        loaded = await self._crud.get_by_id_and_museum(user.id, museum_id)
+        return loaded or user
 
     async def list_by_museum(
         self, museum_id: int, offset: int, limit: int, actor: AdminUser
@@ -94,7 +116,9 @@ class UserService:
             raise PermissionDeniedError()
 
         update_kwargs["updated_by"] = actor.id
-        return await self._crud.update(user, **update_kwargs)
+        updated = await self._crud.update(user, **update_kwargs)
+        loaded = await self._crud.get_by_id_and_museum(updated.id, museum_id)
+        return loaded or updated
 
     async def delete(
         self, museum_id: int, user_id: int, actor: AdminUser

@@ -69,6 +69,18 @@ class EventTypeCrud(Base):
         )
         return result.scalar_one_or_none()
 
+    async def get_by_name(self, name: str) -> EventType | None:
+        result = await self.session.execute(
+            select(EventType).where(EventType.name == name)
+        )
+        return result.scalar_one_or_none()
+
     async def list_all(self) -> list[EventType]:
         result = await self.session.execute(select(EventType))
         return list(result.scalars().all())
+
+    async def count_events_using_type(self, type_id: int) -> int:
+        result = await self.session.execute(
+            select(func.count()).select_from(Event).where(Event.type_id == type_id)
+        )
+        return result.scalar_one()

@@ -2,11 +2,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.cruds.event import EventCrud, EventLocationCrud, EventTypeCrud
 from app.db.models import AdminUser
-from app.db.models.event import Event, EventLocation
+from app.db.models.event import Event, EventLocation, EventType
 from app.enums.database import EventStatusEnum
 from app.exceptions.event import (
     EventLocationNotFoundError,
     EventNotFoundError,
+    EventTypeAlreadyExistsError,
+    EventTypeInUseError,
     EventTypeNotFoundError,
     InvalidEventStatusTransitionError,
 )
@@ -14,6 +16,8 @@ from app.schemas.event import (
     EventCreate,
     EventLocationCreate,
     EventLocationUpdate,
+    EventTypeCreate,
+    EventTypeUpdate,
     EventUpdate,
 )
 from app.services.tenant import check_museum_access
@@ -59,8 +63,44 @@ class EventService:
         if new not in allowed:
             raise InvalidEventStatusTransitionError()
 
-    async def list_event_types(self) -> list:
+    async def list_event_types(self) -> list[EventType]:
         return await self._types.list_all()
+
+    async def get_event_type(self, type_id: int) -> EventType:
+        event_type = await self._types.get_by_id(type_id)
+        if not event_type:
+            raise EventTypeNotFoundError()
+        return event_type
+
+    async def create_event_type(
+        self, data: EventTypeCreate, actor: AdminUser
+    ) -> EventType:
+        if await self._types.get_by_name(data.name):
+            raise EventTypeAlreadyExistsError()
+        return await self._types.create(
+            name=data.name,
+            created_by=actor.id,
+            updated_by=actor.id,
+        )
+
+    async def update_event_type(
+        self, type_id: int, data: EventTypeUpdate, actor: AdminUser
+    ) -> EventType:
+        event_type = await self.get_event_type(type_id)
+        existing = await self._types.get_by_name(data.name)
+        if existing and existing.id != type_id:
+            raise EventTypeAlreadyExistsError()
+        return await self._types.update(
+            event_type,
+            name=data.name,
+            updated_by=actor.id,
+        )
+
+    async def delete_event_type(self, type_id: int) -> None:
+        event_type = await self.get_event_type(type_id)
+        if await self._types.count_events_using_type(type_id) > 0:
+            raise EventTypeInUseError()
+        await self._types.delete(event_type)
 
     async def create_location(
         self,

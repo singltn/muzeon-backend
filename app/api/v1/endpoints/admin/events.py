@@ -4,6 +4,7 @@ from app.api.dependencies import (
     EventManager,
     EventReader,
     get_current_admin_user,
+    get_current_superadmin,
     get_event_service,
 )
 from app.db.models import AdminUser
@@ -16,7 +17,9 @@ from app.schemas.event import (
     EventLocationResponse,
     EventLocationUpdate,
     EventResponse,
+    EventTypeCreate,
     EventTypeResponse,
+    EventTypeUpdate,
     EventUpdate,
 )
 from app.services.event import EventService
@@ -36,6 +39,82 @@ async def list_event_types(
 ) -> list[EventTypeResponse]:
     types = await service.list_event_types()
     return [EventTypeResponse.model_validate(t) for t in types]
+
+
+@router.post(
+    "/event-types",
+    response_model=EventTypeResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать тип события",
+    responses={
+        403: {"model": ErrorResponse, "description": "Permission denied"},
+        409: {"model": ErrorResponse, "description": "Event type already exists"},
+    },
+)
+async def create_event_type(
+    data: EventTypeCreate,
+    current_user: AdminUser = Depends(get_current_superadmin),
+    service: EventService = Depends(get_event_service),
+) -> EventTypeResponse:
+    event_type = await service.create_event_type(data, current_user)
+    return EventTypeResponse.model_validate(event_type)
+
+
+@router.get(
+    "/event-types/{type_id}",
+    response_model=EventTypeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Получить тип события",
+    responses={
+        404: {"model": ErrorResponse, "description": "Event type not found"},
+    },
+)
+async def get_event_type(
+    type_id: int,
+    _current_user: AdminUser = Depends(get_current_admin_user),
+    service: EventService = Depends(get_event_service),
+) -> EventTypeResponse:
+    event_type = await service.get_event_type(type_id)
+    return EventTypeResponse.model_validate(event_type)
+
+
+@router.patch(
+    "/event-types/{type_id}",
+    response_model=EventTypeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Обновить тип события",
+    responses={
+        403: {"model": ErrorResponse, "description": "Permission denied"},
+        404: {"model": ErrorResponse, "description": "Event type not found"},
+        409: {"model": ErrorResponse, "description": "Event type already exists"},
+    },
+)
+async def update_event_type(
+    type_id: int,
+    data: EventTypeUpdate,
+    current_user: AdminUser = Depends(get_current_superadmin),
+    service: EventService = Depends(get_event_service),
+) -> EventTypeResponse:
+    event_type = await service.update_event_type(type_id, data, current_user)
+    return EventTypeResponse.model_validate(event_type)
+
+
+@router.delete(
+    "/event-types/{type_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Удалить тип события",
+    responses={
+        403: {"model": ErrorResponse, "description": "Permission denied"},
+        404: {"model": ErrorResponse, "description": "Event type not found"},
+        409: {"model": ErrorResponse, "description": "Event type is in use"},
+    },
+)
+async def delete_event_type(
+    type_id: int,
+    _current_user: AdminUser = Depends(get_current_superadmin),
+    service: EventService = Depends(get_event_service),
+) -> None:
+    await service.delete_event_type(type_id)
 
 
 @router.post(

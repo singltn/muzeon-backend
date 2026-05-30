@@ -1,5 +1,5 @@
 from app.exceptions.codes import ErrorCode
-from app.exceptions.http import BadRequestError, NotFoundError
+from app.exceptions.http import BadRequestError, ConflictError, NotFoundError
 
 
 class EventNotFoundError(NotFoundError):
@@ -31,4 +31,20 @@ class InvalidEventStatusTransitionError(BadRequestError):
         super().__init__(
             code=ErrorCode.BAD_REQUEST,
             message=message,
+        )
+
+
+class EventTypeAlreadyExistsError(ConflictError):
+    def __init__(self):
+        super().__init__(
+            code=ErrorCode.CONFLICT,
+            message="Event type with this name already exists",
+        )
+
+
+class EventTypeInUseError(ConflictError):
+    def __init__(self):
+        super().__init__(
+            code=ErrorCode.CONFLICT,
+            message="Event type is used by existing events",
         )

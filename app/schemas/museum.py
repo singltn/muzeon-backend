@@ -26,6 +26,14 @@ class MuseumUpdate(BaseModel):
     subscription_end_date: datetime | None = None
 
 
+class MuseumBrief(BaseModel):
+    id: int
+    name: str
+    status: MuseumStatusEnum
+
+    model_config = {"from_attributes": True}
+
+
 class MuseumResponse(BaseModel):
     id: int
     name: str

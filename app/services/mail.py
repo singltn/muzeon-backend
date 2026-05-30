@@ -61,5 +61,25 @@ class Email:
         )
         return await self.send_email(to_email, subject, content)
 
+    async def send_credentials_email(
+        self,
+        to_email: str,
+        password: str,
+        museum_name: str | None = None,
+    ) -> bool:
+        subject = "MUZEON — доступ к панели администратора"
+        museum_line = (
+            f"Музей: {museum_name}\n" if museum_name else ""
+        )
+        content = (
+            "Вам создан аккаунт в панели администратора MUZEON.\n\n"
+            f"{museum_line}"
+            f"Email: {to_email}\n"
+            f"Пароль: {password}\n\n"
+            "При первом входе потребуется ввести пароль и одноразовый код из письма.\n"
+            "Рекомендуем сменить пароль после входа."
+        )
+        return await self.send_email(to_email, subject, content)
+
 
 mailer = Email()

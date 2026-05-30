@@ -1,4 +1,5 @@
 import secrets
+import string
 
 import bcrypt
 
@@ -17,3 +18,8 @@ def generate_otp() -> str:
 
 def generate_session_id() -> str:
     return secrets.token_urlsafe(32)
+
+
+def generate_password(length: int = 12) -> str:
+    alphabet = string.ascii_letters + string.digits
+    return "".join(secrets.choice(alphabet) for _ in range(length))

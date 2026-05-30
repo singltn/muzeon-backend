@@ -5,6 +5,14 @@ from pydantic import BaseModel, Field
 from app.enums.database import EventStatusEnum
 
 
+class EventTypeCreate(BaseModel):
+    name: str = Field(max_length=100)
+
+
+class EventTypeUpdate(BaseModel):
+    name: str = Field(max_length=100)
+
+
 class EventTypeResponse(BaseModel):
     id: int
     name: str
