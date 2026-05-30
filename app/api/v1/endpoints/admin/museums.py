@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, status, Query
 
-from app.api.dependencies import get_current_superadmin, get_current_admin_user
+from app.api.dependencies import (
+    MuseumManager,
+    get_current_superadmin,
+)
 from app.api.dependencies import get_museum_service
-from app.db.models import AdminUser
 from app.exceptions.schemas import ErrorResponse
 from app.schemas.museum import MuseumCreate, MuseumResponse, MuseumListResponse, MuseumUpdate
 from app.services.museum import MuseumService
@@ -92,11 +94,10 @@ async def create_museum(
 )
 async def get_museum_by_id(
         museum_id: int,
-        current_user: AdminUser = Depends(get_current_superadmin),
+        current_user: MuseumManager,
         service: MuseumService = Depends(get_museum_service),
 ) -> MuseumResponse:
-
-    museum = await service.get_by_id(museum_id)
+    museum = await service.get_by_id_for_actor(museum_id, current_user)
     return MuseumResponse.model_validate(museum)
 
 @router.patch(
@@ -122,9 +123,8 @@ async def get_museum_by_id(
 async def update_museum(
         museum_id: int,
         payload: MuseumUpdate,
-        current_user: AdminUser = Depends(get_current_superadmin),
+        current_user: MuseumManager,
         service: MuseumService = Depends(get_museum_service),
 ) -> MuseumResponse:
-
     museum = await service.update(museum_id, payload, current_user)
     return MuseumResponse.model_validate(museum)
