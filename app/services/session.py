@@ -77,7 +77,7 @@ class SessionService:
             user_id: int,
             offset: int = 0,
             limit: int = 10
-    ) -> list[dict]:
+    ) -> tuple[list[dict], int]:
         user_sessions_key = f"{settings.REDIS_USER_SESSION_PREFIX}:{user_id}"
         session_ids = await self._redis.smembers(user_sessions_key)
 
@@ -91,5 +91,7 @@ class SessionService:
                 await self._redis.srem(user_sessions_key, sid_str)
 
         sessions.sort(key=lambda x: x.get("created_at", 0), reverse=True)
-        return sessions[offset: offset + limit]
+
+        total = len(sessions)
+        return sessions[offset: offset + limit], total
 

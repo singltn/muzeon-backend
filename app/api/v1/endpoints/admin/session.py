@@ -21,8 +21,8 @@ async def get_sessions(
         current_user: AdminUser = Depends(get_current_admin_user),
         service: SessionService = Depends(get_session_service),
 ):
-    sessions = await service.get_active_sessions(current_user.id, offset, limit)
-    return SessionListResponse(items=sessions)
+    sessions, total = await service.get_active_sessions(current_user.id, offset, limit)
+    return SessionListResponse(items=sessions, total=total)
 
 @router.delete(
     "/{session_id}",

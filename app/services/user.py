@@ -1,8 +1,7 @@
 # from sqlalchemy.ext.asyncio import AsyncSession
 #
-# from app.core.exceptions import ConflictError, NotFoundError, PermissionDeniedError
 # from app.core.security import hash_password
-# from app.db.models.admin_users import AdminUser
+# from app.db.models.admin_user import AdminUser
 # from app.enums.database import UserRoleEnum
 # from app.cruds.admin_user import AdminUser
 # from app.schemas.auth import CurrentUserResponse

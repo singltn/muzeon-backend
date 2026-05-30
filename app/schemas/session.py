@@ -11,3 +11,4 @@ class SessionResponse(BaseModel):
 
 class SessionListResponse(BaseModel):
     items: list[SessionResponse]
+    total: int

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from app.enums.database import MuseumStatusEnum, SubscriptionPlanEnum
 
@@ -8,18 +8,11 @@ from app.enums.database import MuseumStatusEnum, SubscriptionPlanEnum
 class MuseumCreate(BaseModel):
     name: str
     legal_name: str
-    inn: str
-    ogrn: str
+    inn: str = Field(min_length=10, max_length=12)
+    ogrn: str = Field(min_length=13, max_length=13)
     email: EmailStr
-    phone: str
+    phone: str = Field(min_length=11, max_length=12)
     address: str
-    subscription_plan: SubscriptionPlanEnum = SubscriptionPlanEnum.free
-    subscription_end_date: datetime
-
-    admin_email: EmailStr
-    admin_first_name: str
-    admin_last_name: str
-    admin_password: str
 
 
 class MuseumUpdate(BaseModel):

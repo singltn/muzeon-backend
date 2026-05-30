@@ -24,8 +24,10 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         try:
             yield session
-        finally:
-            await session.close()
+            await session.commit()
+        except:
+            await session.rollback()
+            raise
 
 async def close_db() -> None:
     await engine.dispose()

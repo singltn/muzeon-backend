@@ -1,5 +1,6 @@
 from fastapi import status
 from app.exceptions.base import AppException
+from app.exceptions.codes import ErrorCode
 
 
 class NotFoundError(AppException):
@@ -15,3 +16,11 @@ class ConflictError(AppException):
 class BadRequestError(AppException):
     def __init__(self, code: str, message: str = "Bad Request"):
         super().__init__(status.HTTP_400_BAD_REQUEST, code, message)
+
+class PermissionDeniedError(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            code=ErrorCode.PERMISSION_DENIED,
+            message="Permission denied",
+        )
