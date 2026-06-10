@@ -8,6 +8,7 @@ from app.api.dependencies import get_museum_service
 from app.exceptions.schemas import ErrorResponse
 from app.schemas.museum import MuseumCreate, MuseumResponse, MuseumListResponse, MuseumUpdate
 from app.services.museum import MuseumService
+from app.db.models import AdminUser
 
 router = APIRouter(prefix="/museums", tags=["museums"])
 
