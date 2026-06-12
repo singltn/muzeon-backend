@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = []
     VERSION: str = "0.0.1"
     URL_PREFIX: str = '/api/v1'
+    PORT: int = 8080
+    RELOAD: bool = False
+    WORKERS: int = 4
 
     REDIS_URL: str = "redis://localhost:6379"
     REDIS_PASSWORD: str | None = None
@@ -50,6 +53,8 @@ class DevSettings(Settings):
 class LocalSettings(Settings):
     DATABASE_ECHO_DEBUG_LOG: bool = False # Change to True
     SESSION_COOKIE_SECURE: bool = False
+    RELOAD: bool = True
+    WORKERS: int = 1
 
 
 
