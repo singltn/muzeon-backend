@@ -11,6 +11,7 @@ from app.services.auth import AuthService
 from app.services.museum import MuseumService
 from app.services.user import UserService
 from app.services.event import EventService
+from app.services.dashboard import DashboardService
 from app.core.config import settings
 from app.db.models import AdminUser
 from app.exceptions.auth import AuthenticationRequiredError
@@ -38,6 +39,10 @@ def get_user_service(session: AsyncSession = Depends(get_db)) -> UserService:
 
 def get_event_service(session: AsyncSession = Depends(get_db)) -> EventService:
     return EventService(session)
+
+
+def get_dashboard_service(session: AsyncSession = Depends(get_db)) -> DashboardService:
+    return DashboardService(session)
 
 async def get_current_admin_user(
     request: Request,
