@@ -80,7 +80,7 @@ EventManager = Annotated[
         require_roles(
             UserRoleEnum.super_admin,
             UserRoleEnum.museum_admin,
-            UserRoleEnum.content,
+            UserRoleEnum.museum_stuff,
         )
     ),
 ]
@@ -91,9 +91,7 @@ EventReader = Annotated[
         require_roles(
             UserRoleEnum.super_admin,
             UserRoleEnum.museum_admin,
-            UserRoleEnum.content,
-            UserRoleEnum.marketer,
-            UserRoleEnum.analyst,
+            UserRoleEnum.museum_stuff,
         )
     ),
 ]

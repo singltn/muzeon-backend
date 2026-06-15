@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
 
     admin_user_role_enum = sa.Enum(
-        'super_admin', 'museum_admin', 'content', 'marketer', 'analyst',
+        'super_admin', 'museum_admin', 'museum_stuff',
         name='userroleenum',
     )
     op.create_table(

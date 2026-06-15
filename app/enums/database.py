@@ -16,9 +16,7 @@ class SubscriptionPlanEnum(str, Enum):
 class UserRoleEnum(str, Enum):
     super_admin = "super_admin"
     museum_admin = "museum_admin"
-    content = "content"
-    marketer = "marketer"
-    analyst = "analyst"
+    museum_stuff = "museum_stuff"
 
 
 class EventStatusEnum(str, Enum):

@@ -44,29 +44,7 @@ async def get_me_admin(
 # @router.get("", response_model=UserListResponse)
 # async def list_users(
 #     museum_id: int,
-#     current_user: CurrentUser,
-#     service: UserService = Depends(get_user_service),
-#     offset: int = Query(0, ge=0),
-#     limit: int = Query(20, ge=1, le=100),
-# ) -> UserListResponse:
-#     items, total = await service.list_by_museum(museum_id, offset, limit, current_user)
-#     return UserListResponse(
-#         items=[UserResponse.model_validate(u) for u in items],
-#         total=total,
-#     )
-#
-#
-# @router.get("/{user_id}", response_model=UserResponse)
-# async def get_user(
-#     museum_id: int,
-#     user_id: int,
-#     current_user: CurrentUser,
-#     service: UserService = Depends(get_user_service),
-# ) -> UserResponse:
-#     user = await service.get(museum_id, user_id, current_user)
-#     return UserResponse.model_validate(user)
-#
-#
+#р
 # @router.patch("/{user_id}", response_model=UserResponse)
 # async def update_user(
 #     museum_id: int,
@@ -77,13 +55,3 @@ async def get_me_admin(
 # ) -> UserResponse:
 #     user = await service.update(museum_id, user_id, data, current_user)
 #     return UserResponse.model_validate(user)
-#
-#
-# @router.delete("/{user_id}", status_code=204)
-# async def delete_user(
-#     museum_id: int,
-#     user_id: int,
-#     current_user: CurrentUser,
-#     service: UserService = Depends(get_user_service),
-# ) -> None:
-#     await service.delete(museum_id, user_id, current_user)

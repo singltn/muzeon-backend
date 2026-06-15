@@ -18,7 +18,7 @@ MUSEUM_USER_MANAGER_ROLES = frozenset(
 )
 
 MUSEUM_STAFF_ROLES = frozenset(
-    {UserRoleEnum.museum_admin, UserRoleEnum.content, UserRoleEnum.marketer, UserRoleEnum.analyst}
+    {UserRoleEnum.museum_admin, UserRoleEnum.museum_stuff}
 )
 
 

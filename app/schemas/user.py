@@ -10,7 +10,7 @@ class AdminUserCreate(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
-    role: UserRoleEnum = UserRoleEnum.content
+    role: UserRoleEnum = UserRoleEnum.museum_stuff
 
 
 class AdminUserUpdate(BaseModel):
